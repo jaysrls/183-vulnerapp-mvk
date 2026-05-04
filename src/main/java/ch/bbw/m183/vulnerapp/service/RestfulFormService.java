@@ -36,7 +36,7 @@ public class RestfulFormService {
 			.successHandler((request, response, auth) -> {
 				response.setStatus(HttpServletResponse.SC_OK);
 				response.setContentType("application/json");
-				response.getWriter().write(objectMapper.writeValueAsString(userRepository.findById(auth.getName())));
+				response.getWriter().write(objectMapper.writeValueAsString(userRepository.findById(auth.getName()).orElseThrow()));
 			});
 	}
 
