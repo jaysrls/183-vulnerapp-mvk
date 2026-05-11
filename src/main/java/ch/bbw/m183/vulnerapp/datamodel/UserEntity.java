@@ -2,6 +2,8 @@ package ch.bbw.m183.vulnerapp.datamodel;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.Getter;
@@ -23,5 +25,9 @@ public class UserEntity {
 
 	@Column
 	String password;
+
+	@Enumerated(EnumType.STRING)
+	@Column(nullable = false)
+	Role role = Role.USER;
 
 }

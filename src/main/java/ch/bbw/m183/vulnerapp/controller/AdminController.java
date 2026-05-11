@@ -1,17 +1,20 @@
 package ch.bbw.m183.vulnerapp.controller;
 
-import ch.bbw.m183.vulnerapp.datamodel.UserEntity;
-import ch.bbw.m183.vulnerapp.service.AdminService;
-import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import ch.bbw.m183.vulnerapp.datamodel.UserEntity;
+import ch.bbw.m183.vulnerapp.service.AdminService;
+import lombok.RequiredArgsConstructor;
+
 @RestController
 @RequestMapping("/api/admin123") // noone will ever guess!
+@PreAuthorize("hasRole('ADMIN')")
 @RequiredArgsConstructor
 public class AdminController {
 
