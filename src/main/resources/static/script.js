@@ -1,5 +1,4 @@
 // globals (yay vanilla javascript ftw)
-fetchBlogs();
 loginCheck();
 document.getElementById("login-form")
     .addEventListener("submit", onLoginSubmit);
@@ -16,8 +15,9 @@ function onLoginSubmit(event) {
   const username = event.target[0].value;
   const password = event.target[1].value;
   event.preventDefault();
-  fetch("/login", {
+  fetch("/api/user/login", {
     method: "POST",
+    credentials: "same-origin",
     headers: {
       "Content-Type": "application/x-www-form-urlencoded",
     },
@@ -31,8 +31,12 @@ function onLoginSubmit(event) {
 
 function onLogoutSubmit(event) {
   event.preventDefault();
-  window.sessionStorage.removeItem("fullname");
-  loginCheck();
+  fetch("/api/user/logout", { method: "POST", credentials: "same-origin" })
+      .then(filterOk)
+      .then(() => {
+        window.sessionStorage.removeItem("fullname");
+        loginCheck();
+      });
 }
 
 function onBlogSubmit(event) {
@@ -40,6 +44,7 @@ function onBlogSubmit(event) {
   event.preventDefault();
   fetch("/api/blog", {
     method: "POST",
+    credentials: "same-origin",
     headers: {
       "Content-Type": "application/json",
     },
@@ -52,15 +57,34 @@ function onBlogSubmit(event) {
 
 // switch display based on login status
 function loginCheck() {
-  const fullname = window.sessionStorage.getItem("fullname") || "anonymous";
-  let authentic = fullname !== "anonymous";
+  fetch("/api/user/whoami", { credentials: "same-origin" })
+      .then(response => {
+        if (!response.ok) {
+          throw response;
+        }
+        return response.json();
+      })
+      .then(user => {
+        window.sessionStorage.setItem("fullname", user.fullname);
+        renderLoginState(user.fullname);
+        fetchBlogs();
+      })
+      .catch(() => {
+        window.sessionStorage.removeItem("fullname");
+        renderLoginState("anonymous");
+        renderBlogs([]);
+      });
+}
+
+function renderLoginState(fullname) {
+  const authentic = fullname !== "anonymous";
   document.getElementById("login-form").parentElement.hidden = authentic;
   document.getElementById("logout-form").parentElement.hidden = !authentic;
   document.getElementById("username").innerText = fullname;
 }
 
 function fetchBlogs() {
-  fetch("/api/blog")
+  fetch("/api/blog", { credentials: "same-origin" })
       .then(filterOk)
       .then(response => response.json())
       .then(page => renderBlogs(page.content));
