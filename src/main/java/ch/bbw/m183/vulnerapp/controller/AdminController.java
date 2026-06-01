@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import ch.bbw.m183.vulnerapp.datamodel.UserEntity;
 import ch.bbw.m183.vulnerapp.service.AdminService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -24,7 +25,7 @@ public class AdminController {
 	private final AdminService adminService;
 
 	@PostMapping("/create")
-	public UserEntity createUser(@RequestBody UserEntity newUser) {
+	public UserEntity createUser(@Valid @RequestBody UserEntity newUser) {
 		return adminService.createUser(newUser);
 	}
 

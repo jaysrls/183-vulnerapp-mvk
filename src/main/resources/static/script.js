@@ -1,5 +1,19 @@
 // globals (yay vanilla javascript ftw)
-loginCheck();
+let csrfToken = null;
+
+// Fetch CSRF token on page load - synchronous wait
+async function initializeApp() {
+  try {
+    const response = await fetch("/api/user/csrf-token");
+    const data = await response.json();
+    csrfToken = data.token;
+  } catch (e) {
+    console.error("Failed to fetch CSRF token:", e);
+  }
+  loginCheck();
+}
+
+initializeApp();
 document.getElementById("login-form")
     .addEventListener("submit", onLoginSubmit);
 document.getElementById("logout-form")
@@ -20,6 +34,7 @@ function onLoginSubmit(event) {
     credentials: "same-origin",
     headers: {
       "Content-Type": "application/x-www-form-urlencoded",
+      "X-CSRF-TOKEN": csrfToken || "",
     },
     body: new URLSearchParams({username, password}),
   })
@@ -31,7 +46,13 @@ function onLoginSubmit(event) {
 
 function onLogoutSubmit(event) {
   event.preventDefault();
-  fetch("/api/user/logout", { method: "POST", credentials: "same-origin" })
+  fetch("/api/user/logout", { 
+    method: "POST", 
+    credentials: "same-origin",
+    headers: {
+      "X-CSRF-TOKEN": csrfToken || "",
+    }
+  })
       .then(filterOk)
       .then(() => {
         window.sessionStorage.removeItem("fullname");
@@ -47,6 +68,7 @@ function onBlogSubmit(event) {
     credentials: "same-origin",
     headers: {
       "Content-Type": "application/json",
+      "X-CSRF-TOKEN": csrfToken || "",
     },
     body: JSON.stringify(data),
   })

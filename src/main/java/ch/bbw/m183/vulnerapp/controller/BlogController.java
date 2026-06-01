@@ -5,6 +5,7 @@ import java.util.UUID;
 import ch.bbw.m183.vulnerapp.datamodel.BlogEntity;
 import ch.bbw.m183.vulnerapp.service.BlogService;
 import ch.bbw.m183.vulnerapp.service.HealthService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -32,7 +33,7 @@ public class BlogController {
 	}
 
 	@PostMapping
-	public UUID createBlog(@RequestBody BlogEntity blog) {
+	public UUID createBlog(@Valid @RequestBody BlogEntity blog) {
 		return blogService.createBlog(blog);
 	}
 

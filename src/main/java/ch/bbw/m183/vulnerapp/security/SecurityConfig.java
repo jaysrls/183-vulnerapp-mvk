@@ -50,13 +50,13 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http, RestfulFormService restfulFormService) {
         return http.formLogin(restfulFormService.restfulFormLogin())
                 .exceptionHandling(restfulFormService.unauthorizedPerDefault())
-                .csrf(x -> x.disable())
+                .csrf(csrf -> csrf.csrfTokenRequestHandler(new org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler()))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
                 .logout(logout -> logout
                         .logoutUrl("/logout")
                         .logoutSuccessHandler((request, response, authentication) -> response.setStatus(HttpServletResponse.SC_OK)))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/login", "/logout", "/api/user/login", "/api/user/logout").permitAll()
+                        .requestMatchers("/login", "/logout", "/api/user/login", "/api/user/logout", "/api/user/csrf-token").permitAll()
                         .requestMatchers("/api/admin123/**").hasRole("ADMIN")
                         .requestMatchers("/api/user/**").hasAnyRole("USER", "ADMIN")
                         .requestMatchers("/api/blog/**").hasAnyRole("USER", "ADMIN")
