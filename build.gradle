@@ -17,6 +17,10 @@ repositories {
     mavenCentral()
 }
 
+tasks.withType(JavaCompile) {
+    options.compilerArgs.add '-parameters'
+}
+
 dependencies {
     annotationProcessor 'org.projectlombok:lombok'
 

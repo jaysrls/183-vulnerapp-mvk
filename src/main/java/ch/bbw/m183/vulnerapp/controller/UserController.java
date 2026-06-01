@@ -7,6 +7,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -26,11 +27,12 @@ public class UserController {
 	private final AuthenticationManager authenticationManager;
 
 	@PostMapping("/login")
-	public UserEntity login(@RequestParam String username, @RequestParam String password, HttpServletRequest request) {
+	public UserEntity login(@RequestParam(name = "username") String username, @RequestParam(name = "password") String password, HttpServletRequest request) {
 		var authentication = authenticationManager.authenticate(
 				new UsernamePasswordAuthenticationToken(username, password));
 		SecurityContextHolder.getContext().setAuthentication(authentication);
-		request.getSession(true);
+		var session = request.getSession(true);
+		session.setAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY, SecurityContextHolder.getContext());
 		return userService.whoami(authentication.getName());
 	}
 
