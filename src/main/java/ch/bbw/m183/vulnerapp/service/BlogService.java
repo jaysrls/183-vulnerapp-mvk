@@ -4,6 +4,7 @@ import java.util.UUID;
 import java.util.stream.Stream;
 
 import ch.bbw.m183.vulnerapp.datamodel.BlogEntity;
+import org.springframework.web.util.HtmlUtils;
 import ch.bbw.m183.vulnerapp.repository.BlogRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.event.ContextRefreshedEvent;
@@ -26,13 +27,18 @@ public class BlogService {
 
 	public UUID createBlog(BlogEntity blog) {
 		blog.setId(UUID.randomUUID());
+		if (blog.getTitle() != null) {
+			blog.setTitle(HtmlUtils.htmlEscape(blog.getTitle()));
+		}
+		if (blog.getBody() != null) {
+			blog.setBody(HtmlUtils.htmlEscape(blog.getBody()));
+		}
 		return blogRepository.save(blog)
 				.getId();
 	}
 
 	@EventListener(ContextRefreshedEvent.class)
 	public void loadTestBlogs() {
-		// sample XSS: <img src=a onerror='alert();'>
 		Stream.of(new BlogEntity().setTitle("Understanding Cross-Site Request Forgery (CSRF)")
 								.setBody("""
 										Cross-Site Request Forgery (CSRF) is a type of cyber attack where a malicious actor

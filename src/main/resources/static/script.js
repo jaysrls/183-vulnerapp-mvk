@@ -114,11 +114,18 @@ function fetchBlogs() {
 
 function renderBlogs(blogs) {
   const blogDiv = document.getElementById("blog-container");
-  blogDiv.innerHTML = "" // clear
+  // clear
+  while (blogDiv.firstChild) blogDiv.removeChild(blogDiv.firstChild);
   for (const blog of blogs) {
-    blogDiv.innerHTML += `<h2>${blog.title}</h2>
-            <p>${blog.createdAt}</p>
-            <p>${blog.body}</p>`;
+    const titleEl = document.createElement('h2');
+    titleEl.textContent = blog.title;
+    const dateEl = document.createElement('p');
+    dateEl.textContent = blog.createdAt;
+    const bodyEl = document.createElement('p');
+    bodyEl.textContent = blog.body;
+    blogDiv.appendChild(titleEl);
+    blogDiv.appendChild(dateEl);
+    blogDiv.appendChild(bodyEl);
   }
 }
 
